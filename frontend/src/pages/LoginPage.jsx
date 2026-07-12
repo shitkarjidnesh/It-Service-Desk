@@ -18,12 +18,22 @@ const LoginPage = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    console.log("Form Submitted");
-    console.log("Name:", formData.name);
-    console.log("Password:", formData.password);
+    console.log("Form Submitted locally:", formData);
 
-    // Or log the whole object
-    console.log(formData);
+    fetch("http://localhost:5000/login/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("Response from backend:", data);
+      })
+      .catch((err) => {
+        console.error("Error sending data to backend:", err);
+      });
   };
 
   return (
@@ -50,6 +60,7 @@ const LoginPage = () => {
             value={formData.name}
             onChange={handleChange}
             className="rounded-lg border border-gray-300 px-4 py-2 my-2 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition"
+            required
           />
         </div>
 
@@ -67,7 +78,7 @@ const LoginPage = () => {
             placeholder="Enter Password"
             value={formData.password}
             onChange={handleChange}
-            className="rounded-lg border border-gray-300 px-4 py-2 my-2 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition"
+            className="rounded-lg border border-gray-300 px-4 py-2 my-2 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition" required minLength={8} maxLength={16}
           />
         </div>
 
