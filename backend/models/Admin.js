@@ -1,60 +1,66 @@
 import mongoose from "mongoose";
 import { generateId } from "../utils/idGenerator.js";
+import { hashPassword } from "../utils/passwordUtils.js";
 
-const adminSchema = new mongoose.Schema({
-  adminId: {
-    type: String,
-    required: true,
-    unique: true,
-    index: true
+const adminSchema = new mongoose.Schema(
+  {
+    adminId: {
+      type: String,
+      required: true,
+      unique: true,
+      index: true,
+    },
+    name: {
+      type: String,
+      required: true,
+    },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      index: true,
+      trim: true,
+      lowercase: true,
+    },
+    password: {
+      type: String,
+      required: true,
+    },
+    phone: {
+      type: String,
+    },
+    role: {
+      type: String,
+      default: "admin",
+      enum: ["admin", "super_admin"],
+    },
+    permissions: [
+      {
+        type: String,
+      },
+    ],
+    accountStatus: {
+      type: String,
+      default: "active",
+      enum: ["active", "inactive", "blocked"],
+    },
+    twoFactorEnabled: {
+      type: Boolean,
+      default: false,
+    },
+    lastLoginAt: {
+      type: Date,
+    },
+    createdBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Admin",
+      default: null,
+    },
   },
-  name: {
-    type: String,
-    required: true
+  {
+    timestamps: true,
   },
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-    index: true,
-    trim: true,
-    lowercase: true
-  },
-  password: {
-    type: String,
-    required: true
-  },
-  phone: {
-    type: String
-  },
-  role: {
-    type: String,
-    default: "admin",
-    enum: ["admin", "super_admin"]
-  },
-  permissions: [{
-    type: String
-  }],
-  accountStatus: {
-    type: String,
-    default: "active",
-    enum: ["active", "inactive", "blocked"]
-  },
-  twoFactorEnabled: {
-    type: Boolean,
-    default: false
-  },
-  lastLoginAt: {
-    type: Date
-  },
-  createdBy: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Admin",
-    default: null
-  }
-}, {
-  timestamps: true
-});
+);
 
 // Helper instance method to check if the admin is a superadmin
 adminSchema.methods.isSuperAdmin = function () {
@@ -69,7 +75,12 @@ adminSchema.pre("validate", async function (next) {
       return next(err);
     }
   }
-  next();
+});
+
+adminSchema.pre("save", async function () {
+  if (!this.isModified("password")) return;
+
+  this.password = await hashPassword(this.password);
 });
 
 export default mongoose.model("Admin", adminSchema);

@@ -12,13 +12,13 @@ export async function generateId(counterName, prefix, length = 6) {
     counterName,
     {
       $inc: {
-        sequence: 1
-      }
+        sequence: 1,
+      },
     },
     {
-      new: true,
-      upsert: true
-    }
+      returnNewDocument: true,
+      upsert: true,
+    },
   );
 
   return `${prefix}-${String(counter.sequence).padStart(length, "0")}`;
@@ -35,13 +35,13 @@ export async function generateTicketId() {
     `ticket-${year}`,
     {
       $inc: {
-        sequence: 1
-      }
+        sequence: 1,
+      },
     },
     {
-      new: true,
-      upsert: true
-    }
+      returnNewDocument: true,
+      upsert: true,
+    },
   );
 
   return `INC-${year}-${String(counter.sequence).padStart(6, "0")}`;

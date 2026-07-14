@@ -1,85 +1,89 @@
 import mongoose from "mongoose";
 import { generateId } from "../utils/idGenerator.js";
+import { hashPassword } from "../utils/passwordUtils.js";
 
-const userSchema = new mongoose.Schema({
-  userId: {
-    type: String,
-    required: true,
-    unique: true,
-    index: true
-  },
-  employeeId: {
-    type: String,
-    required: true,
-    unique: true,
-    index: true
-  },
-  name: {
-    type: String,
-    required: true
-  },
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-    index: true,
-    trim: true,
-    lowercase: true
-  },
-  password: {
-    type: String,
-    required: true
-  },
-  phone: {
-    type: String
-  },
-  departmentId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Department",
-    default: null
-  },
-  designation: {
-    type: String
-  },
-  location: {
-    type: String
-  },
-  role: {
-    type: String,
-    default: "user",
-    enum: ["user"]
-  },
-  accountStatus: {
-    type: String,
-    default: "active",
-    enum: ["active", "inactive", "blocked"]
-  },
-  profileImage: {
-    type: String
-  },
-  notificationPreferences: {
-    email: {
-      type: Boolean,
-      default: true
+const userSchema = new mongoose.Schema(
+  {
+    userId: {
+      type: String,
+      required: true,
+      unique: true,
+      index: true,
     },
-    inApp: {
-      type: Boolean,
-      default: true
-    }
+    employeeId: {
+      type: String,
+      required: true,
+      unique: true,
+      index: true,
+    },
+    name: {
+      type: String,
+      required: true,
+    },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      index: true,
+      trim: true,
+      lowercase: true,
+    },
+    password: {
+      type: String,
+      required: true,
+    },
+    phone: {
+      type: String,
+    },
+    departmentId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Department",
+      default: null,
+    },
+    designation: {
+      type: String,
+    },
+    location: {
+      type: String,
+    },
+    role: {
+      type: String,
+      default: "user",
+      enum: ["user"],
+    },
+    accountStatus: {
+      type: String,
+      default: "active",
+      enum: ["active", "inactive", "blocked"],
+    },
+    profileImage: {
+      type: String,
+    },
+    notificationPreferences: {
+      email: {
+        type: Boolean,
+        default: true,
+      },
+      inApp: {
+        type: Boolean,
+        default: true,
+      },
+    },
+    lastLoginAt: {
+      type: Date,
+    },
+    createdBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Admin",
+      default: null,
+    },
   },
-  lastLoginAt: {
-    type: Date
+  {
+    timestamps: true,
   },
-  createdBy: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Admin",
-    default: null
-  }
-}, {
-  timestamps: true
-});
+);
 
-userSchema.pre("validate", async function(next) {
+userSchema.pre("validate", async function (next) {
   if (!this.userId) {
     try {
       this.userId = await generateId("user", "USR");
@@ -87,7 +91,20 @@ userSchema.pre("validate", async function(next) {
       return next(err);
     }
   }
-  next();
+
+  if (!this.employeeId) {
+    try {
+      this.employeeId = await generateId("employee", "EMP");
+    } catch (err) {
+      return next(err);
+    }
+  }
+});
+
+userSchema.pre("save", async function () {
+  if (!this.isModified("password")) return;
+
+  this.password = await hashPassword(this.password);
 });
 
 export default mongoose.model("User", userSchema);
