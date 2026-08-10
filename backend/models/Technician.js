@@ -26,7 +26,7 @@ const technicianSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    phone: {
+    phone: { 
       type: String,
     },
     departmentId: {
@@ -94,7 +94,7 @@ technicianSchema.pre("validate", async function (next) {
     try {
       this.technicianId = await generateId("technician", "TEC");
     } catch (err) {
-      return next(err);
+      return err;
     }
   }
 });

@@ -72,7 +72,7 @@ adminSchema.pre("validate", async function (next) {
     try {
       this.adminId = await generateId("admin", "ADM");
     } catch (err) {
-      return next(err);
+      return err;
     }
   }
 });
