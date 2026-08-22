@@ -1,8 +1,11 @@
 import express from "express";
+import { authMiddleware } from "../middleware/authMiddleware.js";
 
 import {
   registerAdmin,
   loginAdmin,
+  profile,
+  updateProfile,
   // loginUser,
   // getProfile,
   // updateProfile,
@@ -13,6 +16,8 @@ const router = express.Router();
 
 router.post("/register", registerAdmin);
 router.post("/login", loginAdmin);
+router.get("/profile", authMiddleware, profile);
+router.put("/updateprofile", authMiddleware, updateProfile);
 
 // router.post("/login", loginUser);
 

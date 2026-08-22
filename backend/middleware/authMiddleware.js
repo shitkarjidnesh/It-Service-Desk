@@ -1,6 +1,5 @@
-import { verifyToken } from "../utils/jwt";
-
-const authMiddleware = (req, res, next) => {
+import { verifyToken } from "../utils/jwt.js";
+export const authMiddleware = (req, res, next) => {
   try {
     const token = req.cookies.accessToken;
 
@@ -22,5 +21,3 @@ const authMiddleware = (req, res, next) => {
     });
   }
 };
-
-module.exports = authMiddleware;

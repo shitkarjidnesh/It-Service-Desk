@@ -90,3 +90,33 @@ export const logout = (req, res) => {
     message: "Logout successful",
   });
 };
+
+export const profile = async (req, res) => {
+  try {
+    const adminId = req.auth.id;
+    const admin = await Admin.findById(adminId).select("-password");
+    if (!admin) {
+      return res.status(404).json({
+        message: "Admin not found",
+      });
+    }
+    console.log("Admin profile retrieved:", admin);
+    res.json(admin);
+  } catch (error) {
+    res.status(500).json({
+      message: "Server error",
+    });
+  }
+};
+export const updateProfile = async (req, res) => {
+  try {
+    const adminId = req.auth.id;
+    console.log("Admin ID from token:", adminId);
+    console.log("admin route hit");
+    res.json({ message: "Admin route hit" });
+  } catch (error) {
+    res.status(500).json({
+      message: "Server error",
+    });
+  }
+};
