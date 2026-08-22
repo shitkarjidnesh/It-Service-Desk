@@ -77,10 +77,10 @@ adminSchema.pre("validate", async function (next) {
   }
 });
 
-adminSchema.pre("save", async function () {
-  if (!this.isModified("password")) return;
+// adminSchema.pre("save", async function () {
+//   if (!this.isModified("password")) return;
 
-  this.password = await hashPassword(this.password);
-});
+//   this.password = await hashPassword(this.password);
+// });
 
 export default mongoose.model("Admin", adminSchema);

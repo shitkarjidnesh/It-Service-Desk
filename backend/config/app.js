@@ -3,6 +3,7 @@ import express from "express";
 import userRouter from "../routers/userRouter.js";
 import adminRouter from "../routers/adminRouter.js";
 import technicianRouter from "../routers/technicianRouter.js";
+import cookieParser from "cookie-parser";
 // import dotenv from "dotenv";
 const app = express();
 const PORT = 5000;
@@ -10,17 +11,18 @@ const PORT = 5000;
 const connectApp = async () => {
   try {
     app.use(express.json());
+    app.use(cookieParser());
 
     // // Simple CORS Middleware
-    // app.use((req, res, next) => {
-    //   res.setHeader("Access-Control-Allow-Origin", "*");
-    //   res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-    //   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
-    //   if (req.method === "OPTIONS") {
-    //     return res.sendStatus(200);
-    //   }
-    //   next();
-    // });
+    app.use((req, res, next) => {
+      res.setHeader("Access-Control-Allow-Origin", "*");
+      res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+      res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+      if (req.method === "OPTIONS") {
+        return res.sendStatus(200);
+      }
+      next();
+    });
     app.use("/api/users", userRouter);
     app.use("/api/admins", adminRouter);
     app.use("/api/technicians", technicianRouter);
