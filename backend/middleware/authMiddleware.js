@@ -11,6 +11,11 @@ export const authMiddleware = (req, res, next) => {
 
     const decoded = verifyToken(token);
     console.log("Decoded token:", decoded);
+    if (decoded.role !== "admin") {
+      return res.status(403).json({
+        message: "Admin access required",
+      });
+    }
 
     req.auth = decoded;
 

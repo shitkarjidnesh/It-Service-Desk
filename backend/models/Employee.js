@@ -2,14 +2,8 @@ import mongoose from "mongoose";
 import { generateId } from "../utils/idGenerator.js";
 import { hashPassword } from "../utils/passwordUtils.js";
 
-const userSchema = new mongoose.Schema(
+const employeeSchema = new mongoose.Schema(
   {
-    userId: {
-      type: String,
-      required: true,
-      unique: true,
-      index: true,
-    },
     employeeId: {
       type: String,
       required: true,
@@ -83,15 +77,7 @@ const userSchema = new mongoose.Schema(
   },
 );
 
-userSchema.pre("validate", async function (next) {
-  if (!this.userId) {
-    try {
-      this.userId = await generateId("user", "USR");
-    } catch (err) {
-      return next(err);
-    }
-  }
-
+employeeSchema.pre("validate", async function (next) {
   if (!this.employeeId) {
     try {
       this.employeeId = await generateId("employee", "EMP");
@@ -101,10 +87,10 @@ userSchema.pre("validate", async function (next) {
   }
 });
 
-userSchema.pre("save", async function () {
+employeeSchema.pre("save", async function () {
   if (!this.isModified("password")) return;
 
   this.password = await hashPassword(this.password);
 });
 
-export default mongoose.model("User", userSchema);
+export default mongoose.model("User", employeeSchema);

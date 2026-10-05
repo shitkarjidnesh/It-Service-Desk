@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 
-import User from "../models/User.js";
+import User from "../models/Employee.js";
 import Admin from "../models/Admin.js";
 import { hashPassword } from "../utils/passwordUtils.js";
 import { comparePassword } from "../utils/passwordUtils.js";
@@ -65,13 +65,30 @@ export const loginAdmin = async (req, res) => {
     res.json({
       message: "Login successful",
 
-      admin: {
+      user: {
         id: admin._id,
         name: admin.name,
         email: admin.email,
         role: admin.role,
       },
     });
+  } catch (error) {
+    res.status(500).json({
+      message: "Server error",
+    });
+  }
+};
+
+export const deleteAdmin = async (req, res) => {
+  try {
+    console.log("Delete admin request received:", req.body);
+    const adminId = req.body.id;
+    const deletedAdmin = await Admin.findByIdAndDelete(adminId);
+    if (!deletedAdmin) {
+      return res.status(404).json({
+        message: "Admin not found",
+      });
+    }
   } catch (error) {
     res.status(500).json({
       message: "Server error",

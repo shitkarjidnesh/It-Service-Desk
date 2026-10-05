@@ -6,6 +6,7 @@ import {
   loginAdmin,
   profile,
   updateProfile,
+  deleteAdmin,
   // loginUser,
   // getProfile,
   // updateProfile,
@@ -18,6 +19,7 @@ router.post("/register", registerAdmin);
 router.post("/login", loginAdmin);
 router.get("/profile", authMiddleware, profile);
 router.put("/updateprofile", authMiddleware, updateProfile);
+router.delete("/deleteadmin", authMiddleware, deleteAdmin);
 
 // router.post("/login", loginUser);
 

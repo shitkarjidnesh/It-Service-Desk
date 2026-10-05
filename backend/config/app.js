@@ -1,36 +1,32 @@
 // Middleware to parse incoming JSON payloads
 import express from "express";
-import userRouter from "../routers/userRouter.js";
-import adminRouter from "../routers/adminRouter.js";
-import technicianRouter from "../routers/technicianRouter.js";
+import userRoutes from "../routes/userRoutes.js";
+import adminRoutes from "../routes/adminRoutes.js";
+import technicianRoutes from "../routes/technicianRoutes.js";
+import authRoutes from "../routes/authRoutes.js";
 import cookieParser from "cookie-parser";
+import login from "../apis/auth.js";
+import dotenv from "dotenv";
+
+import { corsmiddleware } from "../middleware/corsmiddleware.js";
 // import dotenv from "dotenv";
 const app = express();
 const PORT = 5000;
+dotenv.config();
 
 const connectApp = async () => {
   try {
     app.use(express.json());
     app.use(cookieParser());
+    app.use(corsmiddleware);
 
     // // Simple CORS Middleware
-    app.use((req, res, next) => {
-      res.setHeader("Access-Control-Allow-Origin", "*");
-      res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-      res.setHeader("Access-Control-Allow-Headers", "Content-Type");
-      if (req.method === "OPTIONS") {
-        return res.sendStatus(200);
-      }
-      next();
-    });
-    app.use("/api/users", userRouter);
-    app.use("/api/admins", adminRouter);
-    app.use("/api/technicians", technicianRouter);
 
-    app.post("/login/", (req, res) => {
-      console.log("Form Data received in backend:", req.body);
-      res.json({ status: "success", data: req.body });
-    });
+    app.use("/api/users", userRoutes);
+    app.use("/api/admins", adminRoutes);
+    app.use("/api/technicians", technicianRoutes);
+
+    app.use("/api/auth", authRoutes);
 
     // Simple GET route
     app.get("/api/", (req, res) => {
